@@ -22,28 +22,54 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+var booksGroup = app.MapGroup("/books");
 
-app.MapGet("/weatherforecast", () =>
+booksGroup.MapGet("/", async (BooksService booksService) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    var books = await booksService.GetAsync();
+    return Results.Ok(books);
+});
 
-app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+booksGroup.MapGet("/{id:length(24)}", async (string id, BooksService booksService) =>
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    var book = await booksService.GetAsync(id);
+
+    return book is null ? Results.NotFound() : Results.Ok(book);
+});
+
+booksGroup.MapPost("/", async (Book newBook, BooksService booksService) =>
+{
+    await booksService.CreateAsync(newBook);
+
+    return Results.Created($"/books/{newBook.Id}", newBook);
+});
+
+booksGroup.MapPut("/{id:length(24)}", async (string id, Book updatedBook, BooksService booksService) =>
+{
+    var book = await booksService.GetAsync(id);
+
+    if (book is null)
+    {
+        return Results.NotFound();
+    }
+
+    updatedBook.Id = book.Id;
+
+    await booksService.UpdateAsync(id, updatedBook);
+
+    return Results.NoContent();
+});
+
+booksGroup.MapDelete("/{id:length(24)}", async (string id, BooksService booksService) =>
+{
+    var book = await booksService.GetAsync(id);
+
+    if (book is null)
+    {
+        return Results.NotFound();
+    }
+
+    await booksService.RemoveAsync(id);
+
+    return Results.NoContent();
+});
