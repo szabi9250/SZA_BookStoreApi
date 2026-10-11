@@ -78,3 +78,5 @@ booksGroup.MapDelete("/{id:length(24)}", async (string id, BooksService booksSer
 
     return Results.NoContent();
 });
+
+app.Run();

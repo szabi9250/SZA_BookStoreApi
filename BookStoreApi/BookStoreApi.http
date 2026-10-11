@@ -1,6 +1,27 @@
-@BookStoreApi_HostAddress = http://localhost:5295
+@BookStoreApi_HostAddress = https://localhost:7182
 
-GET {{BookStoreApi_HostAddress}}/weatherforecast/
-Accept: application/json
+
+
+GET {{BookStoreApi_HostAddress}}/books
+
+###
+
+POST {{BookStoreApi_HostAddress}}/books
+Content-Type: application/json
+
+ {
+   "Name": "The Pragmatic Programmer",
+   "Price": 49.99,
+   "Category": "Computers",
+   "Author": "Andy Hunt"
+ }
+
+###
+
+DELETE {{BookStoreApi_HostAddress}}/books/6acb8b1cda4ff59b2e5f30bf
+
+###
+
+GET {{BookStoreApi_HostAddress}}/books/6acb85b538dc5e5a73ff3612
 
 ###
