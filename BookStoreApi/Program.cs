@@ -8,6 +8,11 @@ builder.Configuration.GetSection("BookStoreDatabase"));
 
 builder.Services.AddSingleton<BooksService>();
 
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = null;
+});
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
